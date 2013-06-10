@@ -31,11 +31,11 @@ def _get_internationalized_chains(code_file, function_call = "_"):
         code_file = open(code_file, "r")           
         # read through the file
         for text in code_file.readlines():
-           #strip off the \n
+            #strip off the \n
             text = text.rstrip()
-           #this is probably not the best way, but it works for now
+            #this is probably not the best way, but it works for now
             regex = re.findall(function_call+'\((["\'])(.*?)(["\'])\)', text)
-            # if the regex is not empty and is not already in ips list append
+            # if the regex is not empty and is not already in chains list append
             if regex is not None and regex not in chains and not regex == []:
                 chains.append(regex[0][1])
         code_file.close()
