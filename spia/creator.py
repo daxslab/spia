@@ -25,6 +25,7 @@ import os
 
 
 def _get_internationalized_chains(code_file, function_call = "_"):
+    """Return a list of internationalization chains from a python file"""
     chains = []
     try:
         # open the file
@@ -51,23 +52,67 @@ def _get_internationalized_chains(code_file, function_call = "_"):
 
     return chains
 
+
+def get_keys(file_name):
+    """
+    return a internationalization dict from an internationalization file
+    return an empty dict if file don't exist
+    """
+    try:
+        from internationalizator import _get_module
+        locale_chains_object = _get_module(os.path.basename(file_name)[:-3], file_name[:-len(os.path.basename(file_name))])
+        locale_chains = locale_chains_object["module"]
+        keys = getattr(locale_chains, "keys")
+    except:
+        keys = {}
+    return keys
+
+
+def _remove_old_entries(keys, chains):
+    """remove dict entries that are not in the code internationalization chais"""
+
+    function_keys = keys
+    keys_to_remove = []
+    for key in function_keys:
+        if not key in chains:
+            keys_to_remove.append(key)
+    for key_to_remove in keys_to_remove:
+        function_keys.pop(key_to_remove)
+    return function_keys
+
+def _remove_existent_entries(keys, chains):
+    """remove chains that are in the linternationalization file (keys)"""
+    function_chains = chains
+    chains_to_remove = []
+    for chain in function_chains:
+        if chain in keys:
+            chains_to_remove.append(chain)
+    for chain_to_remove in chains_to_remove:
+        function_chains.remove(chain_to_remove)
+    return function_chains
+
+
 def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-cu"):
+    """Create (or update) a internationalization file"""
     chains = _get_internationalized_chains(input_file, function_call)
 
-    if not lang == None:
-        file_name = os.path.join(output_dir,lang+".py")
-    else:
-        file_name = os.path.basename(input_file)
-        (name, ext) = os.path.splitext(file_name)
-        file_name = os.path.join(output_dir,name+"_SPIA_lang"+ext)
+    file_name = os.path.join(output_dir,lang+".py")
+    
+    keys = get_keys(file_name)
+    
+    keys = _remove_old_entries(keys, chains)
+    chains = _remove_existent_entries(keys, chains)
+    
+    for chain in chains:
+        keys[chain] = chain
 
     try:
         file = open(file_name, 'w+')
         file.write('# coding: utf8\n')
         file.write('\n')
         file.write('keys = {\n')
-        for chain in chains:
-            file.write('\''+chain+'\':\''+chain+'\',\n')
+        for key in keys:
+            file.write('\''+key+'\':\''+keys[key]+'\',\n')
         file.write('}\n')
         file.close()
     except IOError, (errno, strerror):
@@ -87,10 +132,10 @@ if __name__ == '__main__':
     output_dir = args.output_dir
     locale = args.locale
     
-    if locale == None:
-        create_chains_file(input_file, output_dir)
-    else:
-        create_chains_file(input_file, output_dir, lang=locale)
+    #if locale == None:
+    #    create_chains_file(input_file, output_dir)
+    #else:
+    create_chains_file(input_file, output_dir, lang=locale)
     sys.exit(0)
 
 

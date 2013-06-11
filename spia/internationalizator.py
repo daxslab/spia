@@ -34,17 +34,33 @@ def _get_locales_chains_list(locale_chains_folder = None):
         locale_chains_folder = LOCALE_FOLDER
     if locale_chains_folder == None:
         return ""
+
     internationalization_files = os.listdir(locale_chains_folder)
+
+    # remove non python files
+    tmp = []
+    for i_file in internationalization_files:
+        if i_file[-3:] == ".py":
+            tmp.append(i_file)
+    internationalization_files = tmp
+
     for i in internationalization_files:
         try:
             (name, ext) = os.path.splitext(i)        
             if ext == ".py":
-                (file, filename, data) = imp.find_module(name, [locale_chains_folder])
-                module = imp.load_module(name, file, filename, data)
-                locales.append({"locale": i[:-3], "module": module})
+                #(file, filename, data) = imp.find_module(name, [locale_chains_folder])
+                #module = imp.load_module(name, file, filename, data)
+                #locales.append({"locale": i[:-3], "module": module})
+                locales.append(_get_module(name,locale_chains_folder))
+                #print _get_module(name,locale_chains_folder)
         except:
             pass
     return locales
+
+def _get_module(name, locale_chains_folder):
+    (file, filename, data) = imp.find_module(name, [locale_chains_folder])
+    module = imp.load_module(name, file, filename, data)
+    return {"locale": name[:-3], "module": module}
 
 def _simplify_locale(locale):
     """return a given standard locale string in the SPIA simplified locale format"""
