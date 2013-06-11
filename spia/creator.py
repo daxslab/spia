@@ -125,7 +125,7 @@ if __name__ == '__main__':
     parser.add_argument("input_file", help="python file to extract internationalization chains")
     parser.add_argument("output_dir", help="SPIA internationalization file output directory")
     parser.add_argument("-l","--locale", help="Locale of file", default="es-cu")
-    parser.add_argument("-f","--function-call", help="Name of the internationalization function in python code", default="_")
+    parser.add_argument("-f","--function_call", help="Name of the internationalization function in python code", default="_")
     args = parser.parse_args()
     
     input_file = args.input_file
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     #if locale == None:
     #    create_chains_file(input_file, output_dir)
     #else:
-    create_chains_file(input_file, output_dir, lang=locale)
+    create_chains_file(input_file, output_dir, lang=locale, function_call=args.function_call)
     sys.exit(0)
 
 
