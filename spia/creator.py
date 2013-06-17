@@ -24,9 +24,41 @@ import os
 
 
 
-def _get_internationalized_chains(code_file, function_call = "_"):
+def _get_internationalized_chains(code_file, function_call = "_", clean = False, recursive = False, all_files = False):
     """Return a list of internationalization chains from a python file"""
+    
     chains = []
+    
+    if recursive:
+        import fnmatch
+
+        matches = []
+        for root, dirnames, filenames in os.walk(os.path.dirname(code_file)):
+            for filename in fnmatch.filter(filenames, '*.py'):
+                matches.append(os.path.join(root, filename))
+        for c_file in matches:
+            chains = _get_chains_from_file(c_file, chains, function_call = function_call)
+
+    elif all_files:
+        from os import listdir
+        from os.path import isfile, join
+        code_files = [ os.path.join(os.path.dirname(code_file), f) for f in listdir(os.path.dirname(code_file)) if isfile(join(os.path.dirname(code_file),f)) and f.endswith(".py") ]
+        
+        for c_file in code_files:
+            chains = _get_chains_from_file(c_file, chains, function_call = function_call)
+    else:
+        chains = _get_chains_from_file(code_file, chains, function_call = function_call)
+
+    #remove duplicates
+    chains_set = set(chains)
+    chains = []
+    for chain in chains_set:
+        chains.append(chain)
+
+    return chains
+
+def _get_chains_from_file(code_file, chains = [], function_call = "_"):
+    """Return an array with all internationalization chains in a file"""
     try:
         # open the file
         code_file = open(code_file, "r")           
@@ -41,17 +73,10 @@ def _get_internationalized_chains(code_file, function_call = "_"):
                 chains.append(regex[0][1])
         code_file.close()
     except IOError, (errno, strerror):
-        print ("I/O Error(%s) : %s" % (errno, strerror))
+        print "I/O Error(%s) : %s" % (errno, strerror)
         sys.exit(1)
 
-    #remove duplicates
-    chains_set = set(chains)
-    chains = []
-    for chain in chains_set:
-        chains.append(chain)
-
     return chains
-
 
 def get_keys(file_name):
     """
@@ -92,9 +117,9 @@ def _remove_existent_entries(keys, chains):
     return function_chains
 
 
-def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-cu", clean = False):
+def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-cu", clean = False, recursive = False, all_files = False):
     """Create (or update) a internationalization file"""
-    chains = _get_internationalized_chains(input_file, function_call)
+    chains = _get_internationalized_chains(input_file, function_call, clean, recursive, all_files)
 
     file_name = os.path.join(output_dir,lang+".py")
     
@@ -129,6 +154,8 @@ if __name__ == '__main__':
     parser.add_argument("-l","--locale", help="Locale of file", default="es-cu")
     parser.add_argument("-f","--function_call", help="Name of the internationalization function in python code", default="_")
     parser.add_argument("-c", "--clean", help="Remove old internationalization chains if internationalization file exist", action="store_true")
+    parser.add_argument("-r", "--recursive", help="Find internationalization chains in all files recursivly", action="store_true")
+    parser.add_argument("-a", "--all_files", help="Find internationalization chains in all files from folder", action="store_true")
     args = parser.parse_args()
     
     input_file = args.input_file
@@ -138,7 +165,7 @@ if __name__ == '__main__':
     #if locale == None:
     #    create_chains_file(input_file, output_dir)
     #else:
-    create_chains_file(input_file, output_dir, lang=locale, function_call=args.function_call, clean=args.clean )
+    create_chains_file(input_file, output_dir, lang=locale, function_call=args.function_call, clean=args.clean, recursive = args.recursive, all_files = args.all_files )
     sys.exit(0)
 
 
