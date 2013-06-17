@@ -92,7 +92,7 @@ def _remove_existent_entries(keys, chains):
     return function_chains
 
 
-def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-cu"):
+def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-cu", clean = False):
     """Create (or update) a internationalization file"""
     chains = _get_internationalized_chains(input_file, function_call)
 
@@ -100,7 +100,9 @@ def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-c
     
     keys = get_keys(file_name)
     
-    keys = _remove_old_entries(keys, chains)
+    if clean:
+        keys = _remove_old_entries(keys, chains)
+
     chains = _remove_existent_entries(keys, chains)
     
     for chain in chains:
@@ -116,7 +118,7 @@ def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-c
         file.write('}\n')
         file.close()
     except IOError, (errno, strerror):
-        print ("I/O Error(%s) : %s" % (errno, strerror))
+        print "I/O Error(%s) : %s" % (errno, strerror)
         sys.exit(2)
 
 if __name__ == '__main__':
@@ -126,6 +128,7 @@ if __name__ == '__main__':
     parser.add_argument("output_dir", help="SPIA internationalization file output directory")
     parser.add_argument("-l","--locale", help="Locale of file", default="es-cu")
     parser.add_argument("-f","--function_call", help="Name of the internationalization function in python code", default="_")
+    parser.add_argument("-c", "--clean", help="Remove old internationalization chains if internationalization file exist", action="store_true")
     args = parser.parse_args()
     
     input_file = args.input_file
@@ -135,7 +138,7 @@ if __name__ == '__main__':
     #if locale == None:
     #    create_chains_file(input_file, output_dir)
     #else:
-    create_chains_file(input_file, output_dir, lang=locale, function_call=args.function_call)
+    create_chains_file(input_file, output_dir, lang=locale, function_call=args.function_call, clean=args.clean )
     sys.exit(0)
 
 
