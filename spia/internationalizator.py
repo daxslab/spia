@@ -21,7 +21,7 @@ import os
 import sys
 import imp
 
-LOCALE_FOLDER = None
+LOCALE_FOLDER = os.path.join(sys.path[0], "locale")
 
 def load_locale_chains(locale_chains_folder):
     global LOCALE_FOLDER
@@ -32,7 +32,7 @@ def _get_locales_chains_list(locale_chains_folder = None):
     locales = []
     if locale_chains_folder == None:
         locale_chains_folder = LOCALE_FOLDER
-    if locale_chains_folder == None:
+    if os.path.exists(locale_chains_folder) == False:
         return ""
 
     internationalization_files = os.listdir(locale_chains_folder)
