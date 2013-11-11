@@ -19,9 +19,10 @@ The SPIA internationalization files are python modules that contains a dictionar
 # coding: utf8
 
 keys = {
-'home':'casa',
-'keyboard':'teclado',
-'computer':'computadora',
+'home' : 'casa',
+'keyboard' : 'teclado',
+'computer' : 'computadora',
+'my name is %s' : 'mi nombre es %s'
 }
 ```
 SPIA can find the correct module for the system locale and replace the code keywords for the correct translated strings.
@@ -43,6 +44,7 @@ internationalizator.load_locale_chains("/app/locale_dir") # the locale dir conta
 print _('home')
 print _('keyboard')
 print _('computer')
+print _('my name is %s', 'Pepe')
 
 ```
 

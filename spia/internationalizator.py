@@ -58,6 +58,7 @@ def _get_locales_chains_list(locale_chains_folder = None):
     return locales
 
 def _get_module(name, locale_chains_folder):
+    """returns a locale module dictionary"""
     (file, filename, data) = imp.find_module(name, [locale_chains_folder])
     module = imp.load_module(name, file, filename, data)
     return {"locale": name[:-3], "module": module}
@@ -98,7 +99,25 @@ def _get_locale_chains(locale_chains_folder = None, locale = ""):
                 locale_chains = chain_object
     return locale_chains
 
-def _(chain, locale_chains_folder = None, locale=""):
+def apply_replace_rules(chain, args):
+    """replaces in chain the %s with the args list"""
+    try:
+        chain = chain.replace("%s","{!s}")
+        chain = chain.format(*args)
+    except:
+        pass
+    return chain
+
+def _(chain, *args, **keys):
+    try:
+        locale_chains_folder = keys ['locale_chains_folder']
+    except:
+        locale_chains_folder = None
+    try:
+        locale = keys['locale']
+    except:
+        locale = ""
+
     if locale_chains_folder == None:
         locale_chains_folder = LOCALE_FOLDER
     if locale == "":
@@ -111,8 +130,11 @@ def _(chain, locale_chains_folder = None, locale=""):
     except:
         internationalized_string = chain
     
+    internationalized_string = apply_replace_rules(internationalized_string, args)
+    
     return internationalized_string
 
 
 #load_locale_chains("/home/cccaballero/test/SPIA/lang")
-#print _("home")
+#print _("home %s", "loca")
+#print(_("home %s", "loca"))
