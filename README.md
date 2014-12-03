@@ -5,15 +5,17 @@ Quickly and easy, internationalize your python applications
 
 **About**
 
-SPIA makes easy the internationalization process in a on-growing python application, with a pure python (and pythonic) unicode-based internationalization.
+SPIA makes easy the internationalization process in a on-growing python application, with a pure python (and pythonic) internationalization.
 **SPIA is not a complete i18n API yet, but maybe in the future... well, it maybe is not an api yet...**
+
+**SPIA is now python 3.x compatible**
 
 How it works
 ================
 
 **Internationalization files**
 
-The SPIA internationalization files are python modules that contains a dictionary with the key-text peers, the module names correspond to a simplified locale name, for example: "en-us.py" for United states english or "es-es.py" for spain spanish, this is an example of a es-es.py content:
+The SPIA internationalization files are python modules that contains a dictionary with the key-text peers, the module names correspond to a simplified locale name, for example: "en-us.py" for United States english or "es-es.py" for Spain spanish, this is an example of a es-es.py content:
 
 ```python
 # coding: utf8
@@ -45,7 +47,30 @@ print _('home')
 print _('keyboard')
 print _('computer')
 print _('my name is %s', 'Pepe')
+```
+Output in a spanish eviroment:
+```
+casa
+teclado
+computadora
+mi nombre es Pepe
+```
+Output in a english eviroment:
+```
+home
+keyboard
+computer
+my name is Pepe
+```
 
+To force a defined locale you could use:
+```python
+internationalizator.force('es-es') # force translation to Spain spanish
+internationalizator.force('es_ES') # same
+internationalizator.force('es') # force translation to spanish
+internationalizator.force(None) # back to use enviroment locale
+# or
+internationalizator.force('') # back to use enviroment locale
 ```
 
 **Creator**
