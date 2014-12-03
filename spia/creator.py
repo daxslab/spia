@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from __future__ import print_function
+from __future__ import print_function
 import re
 import sys
 import os
@@ -59,21 +59,22 @@ def _get_internationalized_chains(code_file, function_call = "_", clean = False,
 
 def _get_chains_from_file(code_file, chains = [], function_call = "_"):
     """Return an array with all internationalization chains in a file"""
+    PY_STRING_LITERAL_RE = r'(?<=[^\w]'+function_call+'\()(?P<name>'\
+        + r"[uU]?[rR]?(?:'''(?:[^']|'{1,2}(?!'))*''')|"\
+        + r"(?:'(?:[^'\\]|\\.)*')|" + r'(?:"""(?:[^"]|"{1,2}(?!"))*""")|'\
+        + r'(?:"(?:[^"\\]|\\.)*"))'
+
+    regex_translate = re.compile(PY_STRING_LITERAL_RE, re.DOTALL)
     try:
-        # open the file
-        code_file = open(code_file, "r")           
-        # read through the file
-        for text in code_file.readlines():
-            #strip off the \n
-            text = text.rstrip()
-            #this is probably not the best way, but it works for now
-            regex = re.findall(function_call+'\((["\'])(.*?)(["\'])\)', text)
-            # if the regex is not empty and is not already in chains list append
-            if regex is not None and regex not in chains and not regex == []:
-                chains.append(regex[0][1])
+        code_file = open(code_file, "r")
+        text = code_file.read()
         code_file.close()
-    except IOError, (errno, strerror):
-        print "I/O Error(%s) : %s" % (errno, strerror)
+        chains_in_file = regex_translate.findall(text)
+        for chain in chains_in_file:
+            if chain is not None and chain not in chains:
+                chains.append(chain[1:-1])
+    except IOError as e:
+        print ("I/O Error(%s) : %s" % (e.errno, e.strerror))
         sys.exit(1)
 
     return chains
@@ -142,8 +143,8 @@ def create_chains_file(input_file, output_dir, function_call = "_", lang = "es-c
             file.write('\''+key+'\':\''+keys[key]+'\',\n')
         file.write('}\n')
         file.close()
-    except IOError, (errno, strerror):
-        print "I/O Error(%s) : %s" % (errno, strerror)
+    except IOError as e:
+        print ("I/O Error(%s) : %s" % (e.errno, e.strerror))
         sys.exit(2)
 
 if __name__ == '__main__':
