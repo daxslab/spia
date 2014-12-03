@@ -21,9 +21,17 @@ import os
 import sys
 import imp
 
+_DEFINED_LOCALE = ''
+
 LOCALE_FOLDER = os.path.join(sys.path[0], "locale")
 
+def force(locale):
+    """force to translate to locale"""
+    global _DEFINED_LOCALE 
+    _DEFINED_LOCALE = locale
+
 def load_locale_chains(locale_chains_folder):
+    """set locales chains directory"""
     global LOCALE_FOLDER
     LOCALE_FOLDER = locale_chains_folder
 
@@ -114,7 +122,10 @@ def _(chain, *args, **keys):
     except:
         locale_chains_folder = None
     try:
-        locale = keys['locale']
+        if not _DEFINED_LOCALE:
+            locale = keys['locale']
+        else:
+            locale = _DEFINED_LOCALE
     except:
         locale = ""
 
@@ -122,10 +133,11 @@ def _(chain, *args, **keys):
         locale_chains_folder = LOCALE_FOLDER
     if locale == "":
         locale = _get_simple_system_locale()
-    locale_chains_object = _get_locale_chains(locale_chains_folder = locale_chains_folder, locale = locale)
-    locale_chains = locale_chains_object["module"]
-    keys = getattr(locale_chains, "keys")
     try:
+        locale_chains_object = _get_locale_chains(locale_chains_folder = locale_chains_folder, locale = locale)
+        locale_chains = locale_chains_object["module"]
+        keys = getattr(locale_chains, "keys")
+    
         internationalized_string = keys[chain]
     except:
         internationalized_string = chain
