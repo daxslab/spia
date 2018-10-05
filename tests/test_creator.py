@@ -18,3 +18,4 @@ def test_create_i18n_file(datadir):
     assert  "'lolo':'lolo'," in b
     assert  "'pepe':'pepe'," in b
     assert  "'loloa':'loloa'," in b
+    assert  "'home %s':'home %s'," in b

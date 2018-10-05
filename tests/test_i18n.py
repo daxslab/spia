@@ -7,4 +7,5 @@ def test_i18n(datadir):
     assert _('home') == 'casa'
     assert _('language') == 'idioma'
     assert _('car') == 'auto'
+    assert _('home %s', 35) == 'casa 35'
 

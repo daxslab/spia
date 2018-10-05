@@ -4,4 +4,5 @@ keys = {
 'home':'casa',
 'language':'idioma',
 'car':'auto',
+'home %s':'casa %s',
 }
