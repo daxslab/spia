@@ -10,6 +10,7 @@ setup(
     name='spia',
     version='0.1.0',
     packages=['spia', 'spia.creator', 'spia.internationalizator'],
+    scripts=['spia/creator.py'],
     url='https://github.com/daxslab/spia',
     license='LGPL 3.0',
     author='Carlos Cesar Caballero Diaz',

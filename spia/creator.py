@@ -85,7 +85,7 @@ def get_keys(file_name):
     return an empty dict if file don't exist
     """
     try:
-        from internationalizator import _get_module
+        from spia.internationalizator import _get_module
         locale_chains_object = _get_module(os.path.basename(file_name)[:-3], file_name[:-len(os.path.basename(file_name))])
         locale_chains = locale_chains_object["module"]
         keys = getattr(locale_chains, "keys")
