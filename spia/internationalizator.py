@@ -78,11 +78,10 @@ def _simplify_locale(locale):
 
 def _get_system_locale():
     """Return the system locale"""
-    sys_locale = "en_US"
     try:
-        sys_locale = ["LANG"]
-    except:
         sys_locale = locale.getdefaultlocale()[0]
+    except:
+        sys_locale = "en_US"
     return sys_locale
 
 def _get_simple_system_locale():
