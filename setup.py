@@ -9,7 +9,7 @@ Simple Python internationalization API http://spia.readthedocs.io
 setup(
     name='spia',
     version='0.1.0',
-    packages=['spia', 'spia.creator', 'spia.internationalizator'],
+    packages=['spia'],
     scripts=['spia/creator.py'],
     url='https://github.com/daxslab/spia',
     license='LGPL 3.0',
